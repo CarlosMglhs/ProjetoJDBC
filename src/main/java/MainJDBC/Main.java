@@ -1,17 +1,22 @@
 package MainJDBC;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    static void main() {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        IO.println(String.format("Hello and welcome!"));
+import Enum.entities.WorkerLevel;
+import model.entities.Department;
+import model.entities.Seller;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            IO.println("i = " + i);
-        }
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Main {
+    public static void main(String[] args) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Department dep = new Department(1, "Computers");
+        Seller seller = new Seller(1, "Carlos", "carlos@gmail.com.br", sdf.parse("25/07/2002"), WorkerLevel.SENIOR , dep);
+
+        System.out.println(seller);
+        System.out.println("DADOS A PARTE \nNome: " + seller.getName().toUpperCase()
+                + "\nDepartamento: " +seller.getDep().getName());
+
     }
 }
