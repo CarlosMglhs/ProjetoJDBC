@@ -13,17 +13,19 @@ public class DB {
             try {
                 Properties props = loadProperties(); //carrego as propiedades
                 String url = props.getProperty("dburl"); // trago em forma de URL meu BD
-                conn = DriverManager.getConnection(url, props); //ligo a conexão após autenticar meu usu, senha, ip e porta
+                conn = DriverManager.getConnection(url, props);//ligo a conexão com a url e meu user e password
+                System.out.println("\n=-=-=-=-=- Banco de dados conectado com sucesso!! =-=-=-=-=-\n");
             } catch (SQLException e) {
                 throw new DbException(e.getMessage());
             }
-            System.out.println("\n=-=-=-=-=- Banco de dados conectado com sucesso!! =-=-=-=-=-\n");
+
         }
         return conn;
     }
 
     private static Properties loadProperties() {
-        try (FileInputStream fs = new FileInputStream("db.properties")) { //Ele acessa o disco rígido, encontra o arquivo físico db.properties
+        try (FileInputStream fs = new FileInputStream("db.properties")) {
+            // ⬆️ Ele acessa o disco rígido, encontra o arquivo físico db.properties
             Properties props = new Properties(); //a estrutura de dados que interpreta e armazena as informações.
             props.load(fs); //Ele consome o fluxo de dados vindo do fs
             return props;
