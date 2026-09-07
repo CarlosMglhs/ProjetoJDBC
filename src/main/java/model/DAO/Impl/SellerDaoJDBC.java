@@ -10,7 +10,11 @@ import model.entities.Seller;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SellerDaoJDBC implements SellerDAO {
 
@@ -20,12 +24,13 @@ public class SellerDaoJDBC implements SellerDAO {
     ResultSet rs = null;
 
     Connection conn;
-    public SellerDaoJDBC(Connection conn){
+
+    public SellerDaoJDBC(Connection conn) {
         this.conn = conn;
     }
 
     @Override
-    public void insert(Seller seller)  {
+    public void insert(Seller seller) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         try {
             stPrep = conn.prepareStatement("INSERT INTO seller (nome, email, birthdate, base_salary, senioridade, department_id) VALUES (?,?,?,?,?,?)");
@@ -63,12 +68,54 @@ public class SellerDaoJDBC implements SellerDAO {
             if (rs.next()) {
                 Department dep1 = instacieteDepartment(rs); //faço uma função de instantiation
                 Seller obj = instantieteSeller(rs, dep1); //faço uma função de instantiation
-                System.out.println(" =-=-=-=-=-=- Vendedor com o id: " + id + " encontrado =-=-=-==-=-=-=\n"+ obj);
+                System.out.println(" =-=-=-=-=-=- Vendedor com o id: " + id + " encontrado =-=-=-==-=-=-=\n" + obj);
             }
             return null;
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        }finally {
+        } finally {
+            DB.closeStatementPrep(stPrep);
+            DB.closeResultSet(rs);
+        }
+    }
+
+    @Override
+    public List<Seller> findAll() {
+        return List.of();
+    }
+
+    @Override
+    public List<Seller> findByDepartment(Department department) {
+        try {
+            stPrep = conn.prepareStatement("SELECT seller. *, dep.nome AS depName " +
+                    "FROM seller INNER JOIN department dep "
+                    + "ON seller.department_id = dep.id "
+                    + "WHERE department_id = ? "
+                    + "ORDER BY nome");
+            stPrep.setInt(1, department.getId());
+            rs = stPrep.executeQuery();
+
+            List<Seller> depSeller = new ArrayList<>();
+            HashMap<Integer, Department> map = new HashMap<>();
+
+            while (rs.next()) {
+                Department dep = map.get(rs.getInt("department_id"));
+                if (dep == null) {
+                    dep = instacieteDepartment(rs);
+                    map.put(rs.getInt("department_id"), dep); //chave: id & valor: departamento.
+                }
+                Seller obj = instantieteSeller(rs, dep);
+                depSeller.add(obj);
+            }
+            List<Seller> listaOrdenadaId = depSeller.stream() //listaOrdenada pelo ID
+                    .sorted(Comparator.comparing(Seller::getName))
+                    .collect(Collectors.toList());
+            listaOrdenadaId.forEach(System.out::println);
+
+            return listaOrdenadaId;
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
             DB.closeStatementPrep(stPrep);
             DB.closeResultSet(rs);
         }
@@ -88,18 +135,10 @@ public class SellerDaoJDBC implements SellerDAO {
     }
 
     //transformo minha tabela Department em Objeto
-    private Department instacieteDepartment(ResultSet rs) throws SQLException{
+    private Department instacieteDepartment(ResultSet rs) throws SQLException {
         Department dep = new Department();
         dep.setId(rs.getInt("department_id"));
         dep.setName(rs.getString("DepName"));
         return dep;
     }
-
-    @Override
-    public List<Seller> findAll() {
-        return List.of();
-    }
 }
-
-
-//LEMBRAR DE COMMITAR

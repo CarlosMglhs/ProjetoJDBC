@@ -99,7 +99,7 @@ public class Seller {
 
     @Override
     public String toString() {
-        return "id = " + this.getId() +
+        return "\nid = " + this.getId() +
                 "\nNome = " + this.getName() +
                 "\nEmail = " + this.getEmail() +
                 "\nBirth_Date = " + this.getBirthDate() +
