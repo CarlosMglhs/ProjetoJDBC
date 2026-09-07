@@ -99,13 +99,11 @@ public class Seller {
 
     @Override
     public String toString() {
-        return "Seller{" +
-                "id=" + this.getId() +
-                ", name='" + this.getName() + '\'' +
-                ", email='" + this.getEmail() + '\'' +
-                ", birthDate=" + this.getBirthDate() +
-                ", senioridade=" + getSenioridade() +
-                ", dep=" + this.getDep().getName() +
-                '}';
+        return "id = " + this.getId() +
+                "\nNome = " + this.getName() +
+                "\nEmail = " + this.getEmail() +
+                "\nBirth_Date = " + this.getBirthDate() +
+                "\nSenioridade = " + getSenioridade() +
+                "\nDepartamento = " + this.getDep().getName();
     }
 }

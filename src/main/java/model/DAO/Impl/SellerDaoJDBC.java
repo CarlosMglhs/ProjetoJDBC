@@ -6,15 +6,17 @@ import db.DbException;
 import model.DAO.SellerDAO;
 import model.entities.Department;
 import model.entities.Seller;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class SellerDaoJDBC implements SellerDAO {
 
+
     PreparedStatement stPrep = null;
+    Statement st = null;
     ResultSet rs = null;
 
     Connection conn;
@@ -23,8 +25,18 @@ public class SellerDaoJDBC implements SellerDAO {
     }
 
     @Override
-    public void insert(Seller seller) {
-
+    public void insert(Seller seller)  {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            stPrep = conn.prepareStatement("INSERT INTO seller (nome, email, birthdate, base_salary, senioridade, department_id) VALUES (?,?,?,?,?,?)");
+            stPrep.setString(1, seller.getName());
+            stPrep.setString(2, seller.getEmail());
+            java.util.Date dataUtil = sdf.parse(String.valueOf(seller.getBirthDate()));
+            java.sql.Date dataSql = new java.sql.Date(dataUtil.getTime());
+            stPrep.setDate(3, dataSql);
+        } catch (SQLException | ParseException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
     @Override
@@ -39,7 +51,6 @@ public class SellerDaoJDBC implements SellerDAO {
 
     @Override
     public Seller findById(Integer id) {
-
         try {
             stPrep = conn.prepareStatement(
                     "SELECT seller. *, dep.nome as DepName "
@@ -49,22 +60,10 @@ public class SellerDaoJDBC implements SellerDAO {
 
             stPrep.setInt(1, id);
             rs = stPrep.executeQuery();
-            Seller obj = null;
             if (rs.next()) {
-                Department dep = new Department();
-                dep.setId(rs.getInt("department_id"));
-                dep.setName(rs.getString("DepName"));
-
-                obj = new Seller();
-                obj.setId(rs.getInt("id"));
-                obj.setName(rs.getString("nome"));
-                obj.setEmail(rs.getString("email"));
-                obj.setBirthDate(rs.getDate("birthdate"));
-                obj.setBaseSalary(rs.getDouble("base_salary"));
-                obj.setSenioridade(WorkerLevel.valueOf(rs.getString("senioridade")));
-                obj.setDep(dep);
-                System.out.println(obj);
-                return obj;
+                Department dep1 = instacieteDepartment(rs); //faço uma função de instantiation
+                Seller obj = instantieteSeller(rs, dep1); //faço uma função de instantiation
+                System.out.println(" =-=-=-=-=-=- Vendedor com o id: " + id + " encontrado =-=-=-==-=-=-=\n"+ obj);
             }
             return null;
         } catch (SQLException e) {
@@ -73,6 +72,27 @@ public class SellerDaoJDBC implements SellerDAO {
             DB.closeStatementPrep(stPrep);
             DB.closeResultSet(rs);
         }
+    }
+
+    //transformo minha tabela Seller em Objeto
+    private Seller instantieteSeller(ResultSet rs, Department dep) throws SQLException {
+        Seller obj = new Seller();
+        obj.setId(rs.getInt("id"));
+        obj.setName(rs.getString("nome"));
+        obj.setEmail(rs.getString("email"));
+        obj.setBirthDate(rs.getDate("birthdate"));
+        obj.setBaseSalary(rs.getDouble("base_salary"));
+        obj.setSenioridade(WorkerLevel.valueOf(rs.getString("senioridade")));
+        obj.setDep(dep);
+        return obj;
+    }
+
+    //transformo minha tabela Department em Objeto
+    private Department instacieteDepartment(ResultSet rs) throws SQLException{
+        Department dep = new Department();
+        dep.setId(rs.getInt("department_id"));
+        dep.setName(rs.getString("DepName"));
+        return dep;
     }
 
     @Override
