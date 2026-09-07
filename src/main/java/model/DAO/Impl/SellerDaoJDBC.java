@@ -14,6 +14,9 @@ import java.util.List;
 
 public class SellerDaoJDBC implements SellerDAO {
 
+    PreparedStatement stPrep = null;
+    ResultSet rs = null;
+
     Connection conn;
     public SellerDaoJDBC(Connection conn){
         this.conn = conn;
@@ -36,23 +39,23 @@ public class SellerDaoJDBC implements SellerDAO {
 
     @Override
     public Seller findById(Integer id) {
-        PreparedStatement stPrep = null;
-        ResultSet rs = null;
+
         try {
             stPrep = conn.prepareStatement(
                     "SELECT seller. *, dep.nome as DepName "
-                        +"FROM seller INNER JOIN department dep "
-                        +"ON seller.department_id = dep.id "
-                        +"WHERE seller.id = ?");
+                            + "FROM seller INNER JOIN department dep "
+                            + "ON seller.department_id = dep.id "
+                            + "WHERE seller.id = ?");
 
             stPrep.setInt(1, id);
-             rs = stPrep.executeQuery();
-            if(rs.next()){
+            rs = stPrep.executeQuery();
+            Seller obj = null;
+            if (rs.next()) {
                 Department dep = new Department();
                 dep.setId(rs.getInt("department_id"));
                 dep.setName(rs.getString("DepName"));
 
-                Seller obj = new Seller();
+                obj = new Seller();
                 obj.setId(rs.getInt("id"));
                 obj.setName(rs.getString("nome"));
                 obj.setEmail(rs.getString("email"));
@@ -60,6 +63,8 @@ public class SellerDaoJDBC implements SellerDAO {
                 obj.setBaseSalary(rs.getDouble("base_salary"));
                 obj.setSenioridade(WorkerLevel.valueOf(rs.getString("senioridade")));
                 obj.setDep(dep);
+                System.out.println(obj);
+                return obj;
             }
             return null;
         } catch (SQLException e) {

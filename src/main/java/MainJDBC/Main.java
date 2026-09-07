@@ -1,6 +1,8 @@
 package MainJDBC;
 
 import Enum.entities.WorkerLevel;
+import model.DAO.DaoFactory;
+import model.DAO.SellerDAO;
 import model.entities.Department;
 import model.entities.Seller;
 
@@ -10,13 +12,7 @@ import java.util.Date;
 
 public class Main {
     public static void main(String[] args) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Department dep = new Department(1, "Computers");
-        Seller seller = new Seller(1, "Carlos", "carlos@gmail.com.br", sdf.parse("25/07/2002"), WorkerLevel.SENIOR , dep);
-
-        System.out.println(seller);
-        System.out.println("DADOS A PARTE \nNome: " + seller.getName().toUpperCase()
-                + "\nDepartamento: " +seller.getDep().getName());
-
+        SellerDAO sellerDao = DaoFactory.createSellerDAO();
+        Seller seller = sellerDao.findById(2);
     }
 }
