@@ -10,14 +10,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws ParseException {
+        Scanner sc = new Scanner(System.in);
         SellerDAO sellerDao = DaoFactory.createSellerDAO();
         Seller seller = sellerDao.findById(2);
-
-        Department dep = new Department(1, null);
-        List<Seller> list = sellerDao.findByDepartment(dep);
-
+        //System.out.println("DIGITE O ID DO DEPARTAMENTO: ");
+        //int dep = sc.nextInt();
+        Department dep = new Department(1, null );
+        sellerDao.findByDepartment(dep);
+        sellerDao.findAll();
     }
 }
