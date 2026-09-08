@@ -12,15 +12,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import static Enum.entities.WorkerLevel.*;
+
 public class Main {
     public static void main(String[] args) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date dataFixa = sdf.parse("20/08/1998");
         Scanner sc = new Scanner(System.in);
         SellerDAO sellerDao = DaoFactory.createSellerDAO();
+        Department dep = new Department(3, null );
+        Seller novoVendedor = new Seller(null, "Pedro Farias", "Pedro@teste.com", dataFixa, 2800.0, WorkerLevel.JUNIOR, dep);
         Seller seller = sellerDao.findById(2);
-        //System.out.println("DIGITE O ID DO DEPARTAMENTO: ");
-        //int dep = sc.nextInt();
-        Department dep = new Department(1, null );
-        sellerDao.findByDepartment(dep);
         sellerDao.findAll();
+        sellerDao.findByDepartment(dep);
+        //sellerDao.insert(novoVendedor);
+
+
+
     }
 }

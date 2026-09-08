@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class SellerDaoJDBC implements SellerDAO {
 
@@ -29,15 +30,31 @@ public class SellerDaoJDBC implements SellerDAO {
 
     @Override
     public void insert(Seller seller) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         try {
-            stPrep = conn.prepareStatement("INSERT INTO seller (nome, email, birthdate, base_salary, senioridade, department_id) VALUES (?,?,?,?,?,?)");
+            stPrep = conn.prepareStatement("INSERT INTO seller (nome, email, birthdate, base_salary, senioridade, department_id) "
+                    + "VALUES (?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             stPrep.setString(1, seller.getName());
             stPrep.setString(2, seller.getEmail());
-            java.util.Date dataUtil = sdf.parse(String.valueOf(seller.getBirthDate()));
-            java.sql.Date dataSql = new java.sql.Date(dataUtil.getTime());
+            java.sql.Date dataSql = new java.sql.Date(seller.getBirthDate().getTime());
             stPrep.setDate(3, dataSql);
-        } catch (SQLException | ParseException e) {
+            stPrep.setDouble(4, seller.getBaseSalary());
+            stPrep.setString(5, String.valueOf(seller.getSenioridade()));
+            stPrep.setInt(6, seller.getDep().getId());
+            stPrep.executeUpdate();
+
+            ResultSet rs = stPrep.getGeneratedKeys();
+
+            if (rs.next()) {
+                // 2. Extrai o ID novo (primeira coluna do resultado)
+                int idGerado = rs.getInt(1);
+                // 3. Coloca esse ID novo dentro do seu objeto seller (deixa de ser null)
+                seller.setId(idGerado);
+                Department dep = new Department(seller.getId(), seller.getName());
+                Seller sell = instantieteSeller(rs, dep);
+                System.out.println("\n=-=-=-=-=-=-= NOVO FUNCIONARIO CADASTRADO =-=-=-=-=-=-=\n" + sell);
+            }
+
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
     }
@@ -59,7 +76,7 @@ public class SellerDaoJDBC implements SellerDAO {
                     "SELECT seller. *, dep.nome as DepName "
                             + "FROM seller INNER JOIN department dep "
                             + "ON seller.department_id = dep.id "
-                            + "WHERE seller.id = ?");
+                            + "WHERE seller.id = ?", Statement.RETURN_GENERATED_KEYS);
 
             stPrep.setInt(1, id);
             rs = stPrep.executeQuery();
@@ -131,7 +148,7 @@ public class SellerDaoJDBC implements SellerDAO {
                 Seller obj = instantieteSeller(rs, dep);
                 depSeller.add(obj);
             }
-            System.out.println("Departamento: " + depSeller.get(0).getDep().getName());
+            System.out.println("\nDepartamento: " + depSeller.get(0).getDep().getName());
             depSeller.stream()
                     .sorted(Comparator.comparing(Seller::getId))
                     .forEach(System.out::println);
