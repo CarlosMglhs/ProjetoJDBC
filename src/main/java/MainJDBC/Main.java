@@ -2,6 +2,7 @@ package MainJDBC;
 
 import Enum.entities.WorkerLevel;
 import model.DAO.DaoFactory;
+import model.DAO.Impl.SellerDaoJDBC;
 import model.DAO.SellerDAO;
 import model.entities.Department;
 import model.entities.Seller;
@@ -21,13 +22,6 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         SellerDAO sellerDao = DaoFactory.createSellerDAO();
         Department dep = new Department(3, null );
-        Seller novoVendedor = new Seller(null, "Pedro Farias", "Pedro@teste.com", dataFixa, 2800.0, WorkerLevel.JUNIOR, dep);
-        Seller seller = sellerDao.findById(2);
-        sellerDao.findAll();
-        sellerDao.findByDepartment(dep);
-        //sellerDao.insert(novoVendedor);
-
-
 
     }
 }

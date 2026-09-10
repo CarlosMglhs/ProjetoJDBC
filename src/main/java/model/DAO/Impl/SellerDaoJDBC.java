@@ -61,12 +61,35 @@ public class SellerDaoJDBC implements SellerDAO {
 
     @Override
     public void update(Seller seller) {
-
+        try {
+            stPrep = conn.prepareStatement("UPDATE seller "
+                    + "SET nome = ? "
+                    + "WHERE nome.id = ?");
+            stPrep.executeUpdate();
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
     @Override
     public void deleteById(Integer id) {
+        try {
+            stPrep = conn.prepareStatement("DELETE FROM seller "
+                    + "WHERE seller.id = ?");
+            stPrep.executeUpdate();
+            stPrep.setInt(1, id);
+            if(rs.next()){
+                System.out.println("=-=-=-=-=-= Usuário do id " + id + "deletado com sucesso!! =-=-=-=-=");
+                findById(id);
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
 
+    public Seller teste(Integer id){
+        System.out.println("\n=-=-=-=-=-VENDEDOR ENCONTRADO COM SUCESSO!! =-=-=-=-=-\n");
+        return findById(id);
     }
 
     @Override
@@ -83,7 +106,7 @@ public class SellerDaoJDBC implements SellerDAO {
             if (rs.next()) {
                 Department dep1 = instantieteDepartment(rs); //faço uma função de instantiation
                 Seller obj = instantieteSeller(rs, dep1); //faço uma função de instantiation
-                System.out.println(" =-=-=-=-=-=- Vendedor com o id: " + id + " encontrado =-=-=-==-=-=-=\n" + obj);
+                System.out.println(" =-=-=-=-=-=- Vendedor com o id: " + id + " =-=-=-==-=-=-=\n" + obj);
             }
             return null;
         } catch (SQLException e) {
@@ -123,6 +146,9 @@ public class SellerDaoJDBC implements SellerDAO {
 
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
+        }finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
         }
     }
 
