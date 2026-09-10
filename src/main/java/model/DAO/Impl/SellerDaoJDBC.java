@@ -64,7 +64,7 @@ public class SellerDaoJDBC implements SellerDAO {
         try {
             stPrep = conn.prepareStatement("UPDATE seller "
                     + "SET nome = ? "
-                    + "WHERE nome.id = ?");
+                    + "WHERE seller.id = ?");
             stPrep.executeUpdate();
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
@@ -75,12 +75,14 @@ public class SellerDaoJDBC implements SellerDAO {
     public void deleteById(Integer id) {
         try {
             stPrep = conn.prepareStatement("DELETE FROM seller "
-                    + "WHERE seller.id = ?");
-            stPrep.executeUpdate();
+                    + "WHERE id = ?");
             stPrep.setInt(1, id);
-            if(rs.next()){
+            int rowsAffect = stPrep.executeUpdate();
+            if(rowsAffect > 0){
                 System.out.println("=-=-=-=-=-= Usuário do id " + id + "deletado com sucesso!! =-=-=-=-=");
-                findById(id);
+
+            }else {
+                System.out.println("Nenhum usuário encontrado com o id " + id + " para deletar.");
             }
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
