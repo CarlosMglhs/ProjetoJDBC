@@ -22,7 +22,7 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
     }
 
     @Override
-    public void insertDep(Department dep) {
+    public  void insertDep(Department dep) {
         try {
             stPrep = conn.prepareStatement("INSERT INTO department (id, nome) "
                     + "VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -145,5 +145,9 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
         dep.setId(rs.getInt("id"));
         dep.setName(rs.getString("nome"));
         return dep;
+    }
+
+    private static void closeConnection(){
+        DB.closeConnection();
     }
 }

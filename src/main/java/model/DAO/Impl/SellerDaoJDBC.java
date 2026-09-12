@@ -63,7 +63,7 @@ public class SellerDaoJDBC implements SellerDAO {
     public void update(Seller seller) {
         try {
             stPrep = conn.prepareStatement("UPDATE seller "
-                    + "SET nome = ? "
+                    + "SET nome = ?,  base_salary = ?, senioridade = ? "
                     + "WHERE seller.id = ?");
             stPrep.executeUpdate();
         } catch (SQLException e) {
