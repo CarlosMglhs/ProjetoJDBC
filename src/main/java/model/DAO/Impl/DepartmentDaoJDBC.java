@@ -4,6 +4,7 @@ import db.DB;
 import db.DbException;
 import model.DAO.DepartmentDAO;
 import model.entities.Department;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,7 +23,7 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
     }
 
     @Override
-    public  void insertDep(Department dep) {
+    public void insertDep(Department dep) {
         try {
             stPrep = conn.prepareStatement("INSERT INTO department (id, nome) "
                     + "VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -30,14 +31,14 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
             stPrep.setString(2, dep.getName());
             stPrep.executeUpdate();
             ResultSet rs = stPrep.getGeneratedKeys();
-            if(rs.next()){
+            if (rs.next()) {
                 System.out.println("\n=-=-==-=-= DEPARTAMENTO INSERIDO COM SUCESSO =-=-=-=-=-=\n");
                 Department dep1 = instantieteDep(rs);
                 System.out.println(dep1);
             }
         } catch (Exception e) {
             throw new DbException(e.getMessage());
-        }finally {
+        } finally {
             DB.closeStatementPrep(stPrep);
             DB.closeResultSet(rs);
         }
@@ -52,15 +53,15 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
             stPrep.setString(1, dep.getName());
             stPrep.setInt(2, dep.getId());
             int rowsAffect = stPrep.executeUpdate();
-            if(rowsAffect > 0){
-                    System.out.println("\n =-=-=-=-=-=-= Departamento atualizado com sucesso!! =-=-=-=-=-=-= \n");
-                    System.out.println(dep);
-            }else{
+            if (rowsAffect > 0) {
+                System.out.println("\n =-=-=-=-=-=-= Departamento atualizado com sucesso!! =-=-=-=-=-=-= \n");
+                System.out.println(dep);
+            } else {
                 System.out.println("DEPARTAMENTO NÃO ENCONTRADO OU JÁ FOI ATUALIZADO ANTERIORMENTE");
             }
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        }finally {
+        } finally {
             DB.closeStatementPrep(stPrep);
             DB.closeResultSet(rs);
         }
@@ -73,14 +74,14 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
                     + "WHERE id = ?");
             stPrep.setInt(1, id);
             int rowsAffected = stPrep.executeUpdate();
-            if(rowsAffected > 0){
+            if (rowsAffected > 0) {
                 System.out.println("=-=-=-=-=-= Departamento do id " + id + " deletado com sucesso!! =-=-=-=-=");
-            }else {
+            } else {
                 System.out.println("Nenhum departamento encontrado com o id " + id + " para deletar.");
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        }finally {
+        } finally {
             DB.closeStatementPrep(stPrep);
             DB.closeResultSet(rs);
         }
@@ -94,19 +95,19 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
                     + "WHERE department.id = ?");
             stPrep.setInt(1, id);
             rs = stPrep.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 System.out.println("DEPARTAMENTO ENCONTRADO");
                 Department dep = instantieteDep(rs);
                 System.out.println(dep);
                 return dep;
-            }else {
+            } else {
                 System.out.println("DEPARTAMENTO NÃO ENCONTRADO");
             }
             return null;
 
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        }finally {
+        } finally {
             DB.closeStatementPrep(stPrep);
             DB.closeResultSet(rs);
         }
@@ -119,7 +120,7 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
             st = conn.createStatement();
             rs = st.executeQuery("SELECT department. * "
                     + "FROM department");
-            while(rs.next()){
+            while (rs.next()) {
                 Department dep = instantieteDep(rs);
                 depList.add(dep);
             }
@@ -130,13 +131,13 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
             return depList;
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        }finally {
+        } finally {
             DB.closeStatement(st);
             DB.closeResultSet(rs);
         }
     }
 
-    public Department sout(Integer id){
+    public Department sout(Integer id) {
         return searchById(id);
     }
 
@@ -147,7 +148,7 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
         return dep;
     }
 
-    private static void closeConnection(){
+    private static void closeConnection() {
         DB.closeConnection();
     }
 }

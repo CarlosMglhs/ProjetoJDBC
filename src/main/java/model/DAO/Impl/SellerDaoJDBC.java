@@ -65,6 +65,9 @@ public class SellerDaoJDBC implements SellerDAO {
             stPrep = conn.prepareStatement("UPDATE seller "
                     + "SET nome = ?,  base_salary = ?, senioridade = ? "
                     + "WHERE seller.id = ?");
+            stPrep.setString(1, seller.getName());
+            stPrep.setDouble(2, seller.getBaseSalary());
+            stPrep.setString(3, String.valueOf(seller.getSenioridade()));
             stPrep.executeUpdate();
         } catch (SQLException e) {
             throw new DbException(e.getMessage());

@@ -25,7 +25,7 @@ public class DB {
 
     private static Properties loadProperties() {
         try (FileInputStream fs = new FileInputStream("db.properties")) {
-            // ⬆️ Ele acessa o disco rígido, encontra o arquivo físico db.properties
+            // ⬆️ acessa o disco rígido, encontra o arquivo físico db.properties
             Properties props = new Properties(); //a estrutura de dados que interpreta e armazena as informações.
             props.load(fs); //Ele consome o fluxo de dados vindo do fs
             return props;
