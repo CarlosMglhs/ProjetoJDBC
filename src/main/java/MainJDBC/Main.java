@@ -181,7 +181,7 @@ public class Main {
                         System.out.println("\nCategoria atual do vendedor: " + vendedorAtual.getSenioridade());
                         System.out.println("\nDigite a nova categoria [1.JUNIOR, 2.PLENO, 3.SENIOR] (ou ENTER para manter): ");
                         String inputOpcao = sc.nextLine();
-                        WorkerLevel categoriaAtual = tipoCategoria(inputOpcao);
+                        WorkerLevel categoriaAtual = tipoCategoria(inputOpcao, vendedorAtual.getSenioridade());
                         vendedorAtual.setSenioridade(categoriaAtual);
 
                         sell.update(vendedorAtual);
